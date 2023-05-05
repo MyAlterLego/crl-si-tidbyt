@@ -1,18 +1,24 @@
 load("render.star", "render")
-load("time.star", "time")
-load("@stdlib//jsonnet/jsonnet.libsonnet", "jsonnet")
+load("http.star", "http")
+load("encoding/base64.star", "base64")
+
+COINDESK_PRICE_URL = "https://api.coindesk.com/v1/bpi/currentprice.json"
+
+# Load Bitcoin icon from base64 encoded data
+BTC_ICON = base64.decode("""
+
+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
+
+""")
 
 def main():
-    # Read the target date from a file in a GitHub repository
-    url = "https://raw.githubusercontent.com/MyAlterLego/crl-si-tidbyt/blob/main/si-date.txt"
-    target_date_str = jsonnet.makeHttpRequest(url).body
-    target_date = time.parse_time(target_date_str)
 
-    # Calculate the difference between the current time and the target time
-    now = time.now()
-    delta = now - target_date
-
-    # Format the result as a string and display it
     return render.Root(
-        child = render.Text(f"{delta.days} days since target date")
+        child = render.Row( # Row lays out its children horizontally
+                children = [
+                    render.Image(src=BTC_ICON),
+                    render.WrappedText("16 Days Since Last Inicdent"), 
+                    
+                ],
+        )
     )
