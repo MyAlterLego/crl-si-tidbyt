@@ -4,7 +4,7 @@ load("@stdlib//jsonnet/jsonnet.libsonnet", "jsonnet")
 
 def main():
     # Read the target date from a file in a GitHub repository
-    url = "https://raw.githubusercontent.com/your-username/your-repo/main/target_date.json"
+    url = "https://raw.githubusercontent.com/MyAlterLego/crl-si-tidbyt/blob/main/si-date.txt"
     target_date_str = jsonnet.makeHttpRequest(url).body
     target_date = time.parse_time(target_date_str)
 
